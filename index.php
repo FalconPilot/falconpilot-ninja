@@ -7,8 +7,13 @@
   }
 
   // Switch current request URI to actual view
-  $request = $_SERVER['REQUEST_URI'];
+  $request = rtrim($_SERVER['REQUEST_URI'], '/');
   switch ($request) {
+
+    case '':
+      renderPage('pages/index.html');
+      break;
+
     default:
       renderPage('pages/404.html');
       break;
