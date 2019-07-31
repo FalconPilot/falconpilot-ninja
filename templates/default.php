@@ -6,6 +6,5 @@
   </head>
   <body>
     <?php $pageContent; ?>
-    <?php $_SERVER['REQUEST_URI']; ?>
   </body>
 </html>
