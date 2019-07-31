@@ -1,29 +1,53 @@
 <?php
 
-  function renderPage ($path) {
-    $pageContent = include(__DIR__.'/'.$path);
+  function parseSelfURL () {
+    return [
+      'scheme' => $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http',
+      'host' => $_SERVER['HTTP_HOST'],
+      'path' => strtok($_SERVER['REQUEST_URI'], '?')
+    ];
+  }
+
+  $URIOBJECT = parseSelfURL();
+
+  function renderPage ($path, $uriObject) {
+    $pageContentPath = __DIR__.'/'.$path;
+
+    if (!$pageTitle) {
+      $pageTitle = 'FalconPilot Ninja';
+    }
+
+    if (!$pageDescription) {
+      $pageDescription = 'Channel your inner ninja...';
+    }
+
+    $SELF_URL = $uriObject;
+
     include(__DIR__.'/templates/default.php');
   }
 
-  function renderWithTheme ($path, $themePath) {
-    $pageContent = include(__DIR__.'/'.$themePath);
-    $themeContent = include(__DIR__.'/'.$path);
+  function renderWithTheme ($path, $themePath, $uriObject) {
+    $themeContentPath = __DIR__.'/'.$path;
+    renderPage($themePath, $uriObject);
   }
 
   // Switch current request URI to actual view
-  $request = '/'.ltrim(rtrim($_SERVER['REQUEST_URI'], '/'));
-  switch ($request) {
+  $renderingFunction = [
+  
+    '/' => function ($uriObject) {
+      renderPage('pages/index.html', $uriObject);
+    },
 
-    case '/':
-      renderPage('pages/index.html');
-      break;
+    '/akhemar' => function ($uriObject) {
+      renderWithTheme('pages/akhemar/index.html', 'themes/akhemar.php', $uriObject);
+    }
 
-    case '/akhemar':
-      renderWithTheme('pages/akhemar/index.html', 'themes/akhemar.php');
-      break;
+  ][$URIOBJECT['path']];
 
-    default:
-      renderPage('pages/404.html');
-      break;
+  if (!$renderingFunction) {
+    header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
+    renderPage('pages/404.html', $URIOBJECT);
+  } else {
+    $renderingFunction($URIOBJECT);
   }
 ?>

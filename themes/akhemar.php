@@ -1,5 +1,5 @@
 <header>Akhemar ! :D</header>
 <main>
-  <?php $themeContent; ?>
+  <?php include($themeContentPath); ?>
 </main>
 <footer>Hello there</footer>
