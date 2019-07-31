@@ -1,17 +1,25 @@
 <?php
 
-  // renderPage function should only be called once at the same time !
   function renderPage ($path) {
     $pageContent = include(__DIR__.'/'.$path);
     include(__DIR__.'/templates/default.php');
   }
 
+  function renderWithTheme ($path, $themePath) {
+    $pageContent = include(__DIR__.'/'.$themePath);
+    $themeContent = include(__DIR__.'/'.$path);
+  }
+
   // Switch current request URI to actual view
-  $request = rtrim($_SERVER['REQUEST_URI'], '/');
+  $request = '/'.ltrim(rtrim($_SERVER['REQUEST_URI'], '/'));
   switch ($request) {
 
-    case '':
+    case '/':
       renderPage('pages/index.html');
+      break;
+
+    case '/akhemar':
+      renderWithTheme('pages/akhemar/index.html', 'themes/akhemar.php');
       break;
 
     default:
